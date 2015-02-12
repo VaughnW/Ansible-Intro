@@ -1,0 +1,10 @@
+---
+- hosts: all
+  remote_user: vagrant
+  sudo: yes
+
+  tasks:
+  - name: setup nginx yum repo
+    command: rpm -i --force http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm
+  - name: install nginx, memcached
+    command: yum install -y nginx memcached 
