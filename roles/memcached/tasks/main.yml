@@ -1,0 +1,5 @@
+---
+
+- name: install memcached
+  yum: pkg=memcached state=latest
+

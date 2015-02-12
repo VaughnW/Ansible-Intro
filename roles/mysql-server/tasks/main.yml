@@ -1,0 +1,5 @@
+---
+
+- name: install mysql-server
+  yum: pkg=mysql-server state=latest
+
