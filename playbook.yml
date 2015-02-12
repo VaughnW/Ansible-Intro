@@ -16,25 +16,8 @@
       - nginx
       - memcached
 
-  tasks:
-    - name: add yum repo for nginx
-      # TODO:  Find a better way to do this!  UG-LY
-      command: rpm -i --force http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm
-
-    - name: install packages
-      yum: pkg={{item}} state=latest
-      with_items: packages
-
-    # TODO: Find a better way...
-    #       Would perfer to use notify/handlers, but doesn't seem to work with variables
-    - name: restart services
-      service: name={{item}} state=restarted
-      with_items: packages
-
-    # TODO: Don't dup IPs
-    #       Also, find a less hacky solution
-    - name: update hosts file
-      shell: echo "192.168.1.101 app" >> /etc/hosts
+  roles:
+    - front
 
 ######################
 ##### 'app' server
@@ -59,33 +42,5 @@
     dbUserPass: infra1234
     dbName: infratest
 
-  tasks:
-    - name: install packages
-      yum: pkg={{item}} state=latest
-      with_items: packages
-
-    # TODO: Find a better way...
-    #       Would perfer to use notify/handlers, but doesn't seem to work with variables
-    - name: start services
-      service: name={{item}} state=restarted
-      with_items: services
-
-    - name: Copy PHP to apache document root
-      copy: src=test.php dest={{httpdDocumentRoot}} owner=root group=root mode=644
-
-    - name: Copy SQL script
-      copy: src=test.sql dest=/tmp
-
-    - name:  Create database {{dbName}}
-      mysql_db: name={{dbName}} state=present
-
-    - name: Populate database {{dbName}}
-      mysql_db: name={{dbName}} state=import  target=/tmp/test.sql 
-
-    - name:  Create and permission db user {{dbUserName}}
-      mysql_user: name={{dbUserName}} password={{dbUserPass}} priv={{dbName}}.*:ALL host='localhost' state=present
-
-    # TODO: Don't dup IPs
-    #       Also, find a less hacky solution
-    - name: update hosts file
-      shell: echo "192.168.1.100 front" >> /etc/hosts
+  roles:
+    - app
