@@ -26,18 +26,10 @@
       with_items: services
 
     # TODO: Find a better way...
-    #       Would perfer to use notify, which doesn't seem to work with variables
+    #       Would perfer to use notify/handlers, but doesn't seem to work with variables
     - name: restart services
       service: name={{item}} state=restarted
       with_items: services
-
-  handlers:
-      # TODO:  Can this be generlized?
-    - name: restart nginx
-      service: name=nginx state=restarted
-
-    - name: restart memcached
-      service: name=memcached state=restarted
 
 
 ######################
@@ -69,7 +61,7 @@
       with_items: packages
 
     # TODO: Find a better way...
-    #       Would perfer to use notify, but doesn't seem to work with variables
+    #       Would perfer to use notify/handlers, but doesn't seem to work with variables
     - name: start services
       service: name={{item}} state=restarted
       with_items: services
@@ -88,15 +80,4 @@
 
     - name:  Create and permission db user {{dbUserName}}
       mysql_user: name={{dbUserName}} password={{dbUserPass}} priv={{dbName}}.*:ALL host='localhost' state=present
-
-  handlers:
-    - name: restart httpd
-      service: name=httpd state=restarted
-
-    - name: restart php
-      service: name=php state=restarted
-
-    - name: restart mysql-server
-      service: name=mysqld state=restarted
-
 
