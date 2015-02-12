@@ -12,7 +12,7 @@
   sudo: yes
 
   vars:
-    services: 
+    packages: 
       - nginx
       - memcached
 
@@ -21,15 +21,15 @@
       # TODO:  Find a better way to do this!  UG-LY
       command: rpm -i --force http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm
 
-    - name: install services
+    - name: install packages
       yum: pkg={{item}} state=latest
-      with_items: services
+      with_items: packages
 
     # TODO: Find a better way...
     #       Would perfer to use notify/handlers, but doesn't seem to work with variables
     - name: restart services
       service: name={{item}} state=restarted
-      with_items: services
+      with_items: packages
 
 
 ######################

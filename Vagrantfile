@@ -28,14 +28,14 @@ Vagrant.configure(2) do |config|
   config.vm.define 'front' do |machine|
     # Create a private network, which allows host-only access to the machine
     # using a specific IP.
-    config.vm.network "private_network", ip: "192.168.100.1"
+    config.vm.network "private_network", ip: "192.168.0.100"
     config.vm.hostname = "front"
   end
 
   config.vm.define 'app' do |machine|
     # Create a private network, which allows host-only access to the machine
     # using a specific IP.
-    config.vm.network "private_network", ip: "192.168.100.2"
+    config.vm.network "private_network", ip: "192.168.0.101"
     config.vm.hostname = "app"
   end
 
