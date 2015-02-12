@@ -1,0 +1,21 @@
+---
+
+- name: add yum repo for nginx
+  # TODO:  Find a better way to do this!  UG-LY
+  command: rpm -i --force http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm
+
+- name: install packages
+  yum: pkg={{item}} state=latest
+  with_items: packages
+
+# TODO: Find a better way...
+#   Would perfer to use notify/handlers, but doesn't seem to work with variables
+- name: restart services
+  service: name={{item}} state=restarted
+  with_items: packages
+
+# TODO: Don't dup IPs
+#   Also, find a less hacky solution
+- name: update hosts file
+  shell: echo "192.168.1.101 app" >> /etc/hosts
+
