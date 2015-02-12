@@ -1,1 +1,0 @@
-vagrant halt >/dev/null && vagrant destroy -f >/dev/null
