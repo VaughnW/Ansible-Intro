@@ -27,13 +27,24 @@
       - mysql-server
     # TODO: Pull this directly from apache config
     httpdDocumentRoot: /var/www/html
+    dbUserName: infratest
+    # TODO: Find a secure way to store this password
+    dbUserPass: infra1234
+    dbName: infratest
   tasks:
     - name: install packages
       yum: pkg={{item}} state=latest
       with_items: packages
-    - copy: src=test.php dest={{httpdDocumentRoot}} owner=root group=root mode=644
-    - copy: src=test.sql dest=/tmp owner=root 
-    - shell: mysql < /tmp/test.sql
+    - name: Copy PHP to apache document root
+      copy: src=test.php dest={{httpdDocumentRoot}} owner=root group=root mode=644
+    - name: Copy SQL to populate database
+      copy: src=test.sql dest=/tmp owner=root 
+    - name: Populate SQL database
+      shell: mysql < /tmp/test.sql
+    - name:  Create {{dbUserName}} mysql user
+      shell: mysql -e "CREATE USER '{{dbUserName}}'@'localhost' IDENTIFIED BY '{{dbUserPass}}';" || /bin/true
+    - name: Grant {{dbUserName}} all access to {{dbName}} database
+      shell: mysql -e "GRANT ALL PRIVILEGES ON {{dbName}} . * TO '{{dbUserName}}'@'localhost'; FLUSH PRIVILEGES;"
   handlers:
     - name: restart httpd
       service: name=httpd state=restarted
