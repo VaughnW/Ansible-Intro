@@ -4,16 +4,13 @@
   tasks:
     - name: add yum repo for nginx
       command: rpm -i --force http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm
-    - name: install latest version of nginx
-      yum: pkg=nginx state=latest
-      notify:
-      - restart nginx
-    - name: install latest version of memcached 
-      yum: pkg=memcached state=latest
-      notify:
-      - restart memcached
-  handlers:
-    - name: restart nginx
-      service: name=nginx state=restarted
-    - name: restart memcached
-      service: name=memcached state=restarted
+    - name: install packages
+      yum: pkg={{ item }} state=latest
+      with_items:
+        - nginx
+        - memcached
+  # handlers:
+  #  - name: restart nginx
+  #    service: name=nginx state=restarted
+  #  - name: restart memcached
+  #    service: name=memcached state=restarted
