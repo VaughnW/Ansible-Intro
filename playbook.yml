@@ -1,55 +1,101 @@
 ---
+
+
+## TODO:  Figure out how to reuse common code across app and front 
+##        (i.e. install services, etc. that only differ in the values of variables
+
+########################
+##### 'front' server
+########################
+
 - hosts: front
   sudo: yes
+
   vars:
-    packages: 
+    services: 
       - nginx
       - memcached
+
   tasks:
     - name: add yum repo for nginx
       # TODO:  Find a better way to do this!  UG-LY
       command: rpm -i --force http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm
-    - name: install packages
+
+    - name: install services
       yum: pkg={{item}} state=latest
-      with_items: packages
+      with_items: services
+
+    # TODO: Find a better way...
+    #       Would perfer to use notify, which doesn't seem to work with variables
+    - name: restart services
+      service: name={{item}} state=restarted
+      with_items: services
+
   handlers:
+      # TODO:  Can this be generlized?
     - name: restart nginx
       service: name=nginx state=restarted
+
     - name: restart memcached
       service: name=memcached state=restarted
 
+
+######################
+##### 'app' server
+######################
+
 - hosts: app
   sudo: yes
+
   vars:
     packages: 
       - httpd
       - php
       - mysql-server
-    # TODO: Pull this directly from apache config
+      - MySQL-python  # Used by the mysql_ module(s)
+    services:
+      - httpd
+      - mysqld
+    # TODO: Find a way to NOT duplicate this config
     httpdDocumentRoot: /var/www/html
     dbUserName: infratest
-    # TODO: Find a secure way to store this password
+    # TODO: Find a secure way to store passwords!
     dbUserPass: infra1234
     dbName: infratest
+
   tasks:
     - name: install packages
       yum: pkg={{item}} state=latest
       with_items: packages
+
+    # TODO: Find a better way...
+    #       Would perfer to use notify, but doesn't seem to work with variables
+    - name: start services
+      service: name={{item}} state=restarted
+      with_items: services
+
     - name: Copy PHP to apache document root
       copy: src=test.php dest={{httpdDocumentRoot}} owner=root group=root mode=644
-    - name: Copy SQL to populate database
-      copy: src=test.sql dest=/tmp owner=root 
-    - name: Populate SQL database
-      shell: mysql < /tmp/test.sql
-    - name:  Create {{dbUserName}} mysql user
-      shell: mysql -e "CREATE USER '{{dbUserName}}'@'localhost' IDENTIFIED BY '{{dbUserPass}}';" || /bin/true
-    - name: Grant {{dbUserName}} all access to {{dbName}} database
-      shell: mysql -e "GRANT ALL PRIVILEGES ON {{dbName}} . * TO '{{dbUserName}}'@'localhost'; FLUSH PRIVILEGES;"
+
+    - name: Copy SQL script
+      copy: src=test.sql dest=/tmp
+
+    - name:  Create database {{dbName}}
+      mysql_db: name={{dbName}} state=present
+
+    - name: Populate database {{dbName}}
+      mysql_db: name={{dbName}} state=import  target=/tmp/test.sql 
+
+    - name:  Create and permission db user {{dbUserName}}
+      mysql_user: name={{dbUserName}} password={{dbUserPass}} priv={{dbName}}.*:ALL host='localhost' state=present
+
   handlers:
     - name: restart httpd
       service: name=httpd state=restarted
+
     - name: restart php
       service: name=php state=restarted
+
     - name: restart mysql-server
       service: name=mysqld state=restarted
 
