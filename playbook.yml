@@ -31,6 +31,10 @@
       service: name={{item}} state=restarted
       with_items: packages
 
+    # TODO: Don't dup IPs
+    #       Also, find a less hacky solution
+    - name: update hosts file
+      shell: echo "192.168.1.101 app" >> /etc/hosts
 
 ######################
 ##### 'app' server
@@ -81,3 +85,7 @@
     - name:  Create and permission db user {{dbUserName}}
       mysql_user: name={{dbUserName}} password={{dbUserPass}} priv={{dbName}}.*:ALL host='localhost' state=present
 
+    # TODO: Don't dup IPs
+    #       Also, find a less hacky solution
+    - name: update hosts file
+      shell: echo "192.168.1.100 front" >> /etc/hosts
