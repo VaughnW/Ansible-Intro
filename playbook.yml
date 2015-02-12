@@ -6,11 +6,11 @@
       - nginx
       - memcached
   tasks:
-      # TODO:  Find a better way to do this!  UG-LY
     - name: add yum repo for nginx
+      # TODO:  Find a better way to do this!  UG-LY
       command: rpm -i --force http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm
     - name: install packages
-      yum: pkg={{ item }} state=latest
+      yum: pkg={{item}} state=latest
       with_items: packages
   handlers:
     - name: restart nginx
@@ -25,16 +25,21 @@
       - httpd
       - php
       - mysql-server
+    # TODO: Pull this directly from apache config
+    httpdDocumentRoot: /var/www/html
   tasks:
     - name: install packages
-      yum: pkg={{ item }} state=latest
+      yum: pkg={{item}} state=latest
       with_items: packages
+    - copy: src=test.php dest={{httpdDocumentRoot}} owner=root group=root mode=644
+    - copy: src=test.sql dest=/tmp owner=root 
+    - shell: mysql < /tmp/test.sql
   handlers:
     - name: restart httpd
       service: name=httpd state=restarted
     - name: restart php
       service: name=php state=restarted
     - name: restart mysql-server
-      service: name=myself-server state=restarted
+      service: name=mysqld state=restarted
 
 
