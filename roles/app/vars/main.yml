@@ -1,0 +1,11 @@
+---
+
+    # TODO: Find a way to NOT duplicate this config (e.g. pull value from the remote server?)
+    httpdDocumentRoot: /var/www/html
+
+    dbUserName: infratest
+
+    # TODO: Find a secure way to store passwords!
+    dbUserPass: infra1234
+
+    dbName: infratest
