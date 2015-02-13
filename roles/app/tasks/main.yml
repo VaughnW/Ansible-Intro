@@ -1,20 +1,13 @@
 ---
 
-- name: install packages
-  yum: pkg={{item}} state=latest
-  with_items: packages
-
-# TODO: Find a better way...
-#   Would perfer to use notify/handlers, but doesn't seem to work with variables
-- name: start services
-  service: name={{item}} state=restarted
-  with_items: services
-
 - name: Copy PHP to apache document root
   copy: src=test.php dest={{httpdDocumentRoot}} owner=root group=root mode=644
 
 - name: Copy SQL script
   copy: src=test.sql dest=/tmp
+
+# Mysql server must be running before we can use it
+- meta: flush_handlers
 
 - name:  Create database {{dbName}}
   mysql_db: name={{dbName}} state=present
@@ -25,7 +18,9 @@
 - name:  Create and permission db user {{dbUserName}}
   mysql_user: name={{dbUserName}} password={{dbUserPass}} priv={{dbName}}.*:ALL host='localhost' state=present
 
-# TODO: Don't dup IPs
-#   Also, find a less hacky solution
+# TODO: Only write if file does NOT contain the line
+# TODO: Switch to a less hacky way to write to the file?
+# TODO: Don't dup IPs (currently duplicated in Vagrant file, must be manually synched)
 - name: update hosts file
   shell: echo "192.168.1.100 front" >> /etc/hosts
+

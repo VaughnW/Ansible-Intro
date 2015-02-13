@@ -2,4 +2,5 @@
 
 - name: install memcached
   yum: pkg=memcached state=latest
+  notify: restart memcached
 

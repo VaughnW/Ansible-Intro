@@ -1,10 +1,11 @@
 ---
 
-# TODO:  See if there's a better way to do this.  (e.g. copy yum repo config to remote box)
+# TODO:  Is there a better way to do this?  (e.g. copy yum repo config to remote box)
 - name: add yum repo for nginx
   # --force prevents erroring out if already installed
   command: rpm -i --force http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm
 
 - name: install nginx
   yum: pkg=nginx state=latest
+  notify: restart nginx
 

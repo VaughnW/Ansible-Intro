@@ -1,5 +1,10 @@
 ---
 
+  # Required to use mysql_* modules
+- name: install MySQL-python
+  yum: pkg=MySQL-python state=latest
+
 - name: install mysql-server
   yum: pkg=mysql-server state=latest
+  notify: restart mysql-server
 

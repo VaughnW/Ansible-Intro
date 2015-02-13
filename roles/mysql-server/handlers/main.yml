@@ -1,14 +1,14 @@
 ---
 
-    - name: start mysql-server
-      service: name=mysqld state=started
+- name: start mysql-server
+  service: name=mysqld state=started
 
-    - name: stop mysql-server
-      service: name=mysqld state=stopped
+- name: stop mysql-server
+  service: name=mysqld state=stopped
 
-    - name: restart mysql-server
-      service: name=mysqld state=restarted
+- name: restart mysql-server
+  service: name=mysqld state=restarted
 
-    - name: reload mysql-server
-      service: name=mysqld state=reloaded
+- name: reload mysql-server
+  service: name=mysqld state=reloaded
 

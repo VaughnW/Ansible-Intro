@@ -1,14 +1,14 @@
 ---
 
-    - name: start httpd
-      service: name=httpd state=started
+- name: start httpd
+  service: name=httpd state=started
 
-    - name: stop httpd
-      service: name=httpd state=stopped
+- name: stop httpd
+  service: name=httpd state=stopped
 
-    - name: restart httpd
-      service: name=httpd state=restarted
+- name: restart httpd
+  service: name=httpd state=restarted
 
-    - name: reload httpd
-      service: name=httpd state=reloaded
+- name: reload httpd
+  service: name=httpd state=reloaded
 

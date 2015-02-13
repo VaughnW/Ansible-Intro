@@ -1,46 +1,14 @@
 ---
 
-
-## TODO:  Figure out how to reuse common code across app and front 
-##        (i.e. install services, etc. that only differ in the values of variables
-
-########################
-##### 'front' server
-########################
+# TODO: Find a better home for "sudo: yes" (e.g. move to roles)
 
 - hosts: front
   sudo: yes
-
-  vars:
-    packages: 
-      - nginx
-      - memcached
-
   roles:
     - front
 
-######################
-##### 'app' server
-######################
-
 - hosts: app
   sudo: yes
-
-  vars:
-    packages: 
-      - httpd
-      - php
-      - mysql-server
-      - MySQL-python  # Used by the mysql_ module(s)
-    services:
-      - httpd
-      - mysqld
-    # TODO: Find a way to NOT duplicate this config
-    httpdDocumentRoot: /var/www/html
-    dbUserName: infratest
-    # TODO: Find a secure way to store passwords!
-    dbUserPass: infra1234
-    dbName: infratest
-
   roles:
     - app
+
