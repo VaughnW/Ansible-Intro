@@ -1,0 +1,36 @@
+*filter
+
+# Dropping all incoming packets by default
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+
+# Allow all outgoing packets by default
+:OUTPUT ACCEPT [0:0]
+
+# Create custom chain
+:RH-Firewall-1-INPUT - [0:0]
+-A INPUT -j RH-Firewall-1-INPUT
+-A FORWARD -j RH-Firewall-1-INPUT
+
+# Allow loopback traffic
+-A RH-Firewall-1-INPUT -i lo -j ACCEPT
+
+# Allow ICMP (ping, etc) 
+-A RH-Firewall-1-INPUT -p icmp --icmp-type any -j ACCEPT
+
+# Enable connection tracking
+-A RH-Firewall-1-INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# Allow ssh connections
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j ACCEPT
+
+# Allow (non-secure) webserver traffic
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT
+
+# Allow memcache connections
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 11211 -j ACCEPT
+
+# Reject everything else
+-A RH-Firewall-1-INPUT -j REJECT --reject-with icmp-host-prohibited
+
+COMMIT

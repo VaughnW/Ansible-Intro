@@ -1,5 +1,5 @@
 ---
 
 - name: install php
-  yum: pkg=php state=latest
+  yum: pkg="php*" state=latest
 

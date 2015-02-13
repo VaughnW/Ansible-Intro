@@ -1,8 +1,14 @@
 ---
 
-# TODO: Only write if file does NOT contain the line
-# TODO: Switch to a less hacky way to write to the file?
 # TODO: Don't dup IPs (currently duplicated in Vagrant file, must be manually synched)
-- name: update hosts file
-  shell: echo "192.168.1.101 app" >> /etc/hosts
+- name: Update hosts file
+  lineinfile: dest=/etc/hosts state=present line="192.168.1.101 app"
+
+- name: Copy rules and enable firewall
+  copy: src=iptables dest=/etc/sysconfig/iptables
+#  notify: restart iptables
+
+- name: Update nginx config
+  copy: src=default.conf dest=/etc/nginx/conf.d/default.conf
+  notify: restart nginx
 

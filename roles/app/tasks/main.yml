@@ -1,16 +1,13 @@
 ---
 
-- name: Copy PHP to apache document root
-  copy: src=test.php dest={{httpdDocumentRoot}} owner=root group=root mode=644
-
-- name: Copy SQL script
-  copy: src=test.sql dest=/tmp
-
 # Mysql server must be running before we can use it
 - meta: flush_handlers
 
 - name:  Create database {{dbName}}
   mysql_db: name={{dbName}} state=present
+
+- name: Copy SQL script
+  copy: src=test.sql dest=/tmp
 
 - name: Populate database {{dbName}}
   mysql_db: name={{dbName}} state=import  target=/tmp/test.sql 
@@ -18,9 +15,18 @@
 - name:  Create and permission db user {{dbUserName}}
   mysql_user: name={{dbUserName}} password={{dbUserPass}} priv={{dbName}}.*:ALL host='localhost' state=present
 
-# TODO: Only write if file does NOT contain the line
-# TODO: Switch to a less hacky way to write to the file?
+- name: Configure apache to listen on 8080
+  lineinfile: dest=/etc/httpd/conf/httpd.conf state=present regexp="^Listen 80$" line="Listen 8080"
+  notify: restart httpd
+
+- name: Copy PHP to apache document root
+  copy: src=test.php dest={{httpdDocumentRoot}} owner=root group=root mode=644
+
 # TODO: Don't dup IPs (currently duplicated in Vagrant file, must be manually synched)
-- name: update hosts file
-  shell: echo "192.168.1.100 front" >> /etc/hosts
+- name: Update hosts file
+  lineinfile: dest=/etc/hosts state=present line="192.168.1.100 front"
+
+- name: Copy rules and enable firewall
+  copy: src=iptables dest=/etc/sysconfig/iptables
+#  notify: restart iptables
 

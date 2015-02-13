@@ -1,0 +1,34 @@
+*filter
+
+# Dropping all incoming packets by default
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+
+# Allow all outgoing packets by default
+:OUTPUT ACCEPT [0:0]
+
+# Create custom chain
+:RH-Firewall-1-INPUT - [0:0]
+-A INPUT -j RH-Firewall-1-INPUT
+-A FORWARD -j RH-Firewall-1-INPUT
+
+# Allow loopback traffic
+-A RH-Firewall-1-INPUT -i lo -j ACCEPT
+
+# Allow ICMP (ping, etc) 
+-A RH-Firewall-1-INPUT -p icmp --icmp-type any -j ACCEPT
+
+# Enable connection tracking
+-A RH-Firewall-1-INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# Allow ssh connections
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j ACCEPT
+
+# Allow webserver traffic from proxy server
+## TODO: Don't duplicate IP address (see Vagrantfile and /etc/hosts)
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp -s 192.168.1.100 --dport 8080 -j ACCEPT
+
+# Reject everything else
+-A RH-Firewall-1-INPUT -j REJECT --reject-with icmp-host-prohibited
+
+COMMIT
