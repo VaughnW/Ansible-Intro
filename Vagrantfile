@@ -25,18 +25,18 @@ Vagrant.configure(2) do |config|
   # accessing "localhost:8080" will access port 80 on the guest machine.
   # config.vm.network "forwarded_port", guest: 80, host: 8080
 
-  config.vm.define 'front' do |machine|
+  config.vm.define 'front' do |front|
     # Create a private network, which allows host-only access to the machine
     # using a specific IP.
-    config.vm.network "private_network", ip: "192.168.1.100"
-    config.vm.hostname = "front"
+    front.vm.hostname = "front"
+    front.vm.network "private_network", ip: "192.168.1.100"
   end
 
-  config.vm.define 'app' do |machine|
+  config.vm.define 'app' do |app|
     # Create a private network, which allows host-only access to the machine
     # using a specific IP.
-    config.vm.network "private_network", ip: "192.168.1.101"
-    config.vm.hostname = "app"
+    app.vm.hostname = "app"
+    app.vm.network "private_network", ip: "192.168.1.101"
   end
 
   # Create a public network, which generally matched to bridged network.
@@ -80,6 +80,11 @@ Vagrant.configure(2) do |config|
   # SHELL
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "playbook.yml"
+    ansible.groups = {
+      "app_group" => ["app"],
+      "front_group" => ["front"],
+      "all_groups:children" => ["app_group", "front_group"]
+    }
   end
 
 end

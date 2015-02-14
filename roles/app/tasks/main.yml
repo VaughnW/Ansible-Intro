@@ -27,6 +27,6 @@
   lineinfile: dest=/etc/hosts state=present line="192.168.1.100 front"
 
 - name: Copy rules and enable firewall
-  copy: src=iptables dest=/etc/sysconfig/iptables
+  copy: src=iptables dest=/etc/sysconfig/iptables backup=yes
 #  notify: restart iptables
 
