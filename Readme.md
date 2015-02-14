@@ -17,12 +17,12 @@ The process should perform the following steps:
 2. Setup `apache2`, `php5.3`, `mysql-server` on the `app` server
 3. Download and install the following PHP script into the document root of
 Apache on `app`:
-[test.php](test.php)
+[test.php](roles/app/files/test.php)
 _There may be other packages required on the servers to successfully execute the
 test.php script._
 4. Download and run the following SQL script on `app`.  After correctly loading,
 it should have loaded the `infratest` database with a test table:
-[test.sql](test.sql)
+[test.sql](roles/app/files/test.sql)
 5. Create and grant all privileges to user `infratest` on the MySQL database
 `infratest` with the password `infra1234`.
 6. Add entries to the `/etc/hosts` file on both servers to map the hosts `front`

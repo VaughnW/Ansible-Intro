@@ -1,7 +1,5 @@
 ---
 
-# TODO: Find a better home for "sudo: yes" (e.g. move to roles)
-
 - hosts: front
   sudo: yes
   roles:

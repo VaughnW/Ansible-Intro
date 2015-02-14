@@ -80,11 +80,6 @@ Vagrant.configure(2) do |config|
   # SHELL
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "playbook.yml"
-    ansible.groups = {
-      "app_group" => ["app"],
-      "front_group" => ["front"],
-      "all_groups:children" => ["app_group", "front_group"]
-    }
   end
 
 end

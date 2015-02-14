@@ -3,7 +3,7 @@
 # Mysql server must be running before we can use it
 - meta: flush_handlers
 
-- name:  Create database {{dbName}}
+- name: Create database {{dbName}}
   mysql_db: name={{dbName}} state=present
 
 - name: Copy SQL script
@@ -12,7 +12,7 @@
 - name: Populate database {{dbName}}
   mysql_db: name={{dbName}} state=import  target=/tmp/test.sql 
 
-- name:  Create and permission db user {{dbUserName}}
+- name: Create and permission db user {{dbUserName}}
   mysql_user: name={{dbUserName}} password={{dbUserPass}} priv={{dbName}}.*:ALL host='localhost' state=present
 
 - name: Configure apache to listen on 8080
