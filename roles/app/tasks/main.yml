@@ -28,5 +28,5 @@
 
 - name: Copy rules and enable firewall
   copy: src=iptables dest=/etc/sysconfig/iptables backup=yes
-#  notify: restart iptables
+  notify: restart iptables
 
